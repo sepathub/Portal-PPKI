@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ms" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Pengurusan PPKI SK Simpang Empat</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpg" href="https://i.postimg.cc/W4vLfYrm/LOGO-SKSE-utk-background-putih-(2).jpg">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins & Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        friendly: ['Nunito', 'sans-serif'], /* Font Sekunder */
+                    },
+                    colors: {
+                        cheerful: {
+                            sky: '#e0f2fe',      /* Sky Blue 100 */
+                            skyDeep: '#0284c7',  /* Sky Blue 600 (High Contrast) */
+                            mint: '#dcfce7',     /* Mint Green 100 */
+                            mintDeep: '#059669', /* Emerald 600 (High Contrast) */
+                            yellow: '#fef9c3',   /* Soft Yellow 100 */
+                            yellowDeep: '#ca8a04', /* Yellow 600 (High Contrast) */
+                            pink: '#fae8ff',     /* Pastel Pink/Fuchsia 100 */
+                            pinkDeep: '#be185d', /* Pink 700 (High Contrast) */
+                            text: '#0f172a',     /* Slate 900 (Very Dark for reading) */
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                        'float-slow': 'float 8s ease-in-out 1s infinite',
+                        'float-reverse': 'floatReverse 7s ease-in-out 2s infinite',
+                        'wiggle': 'wiggle 0.3s ease-in-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        floatReverse: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(20px)' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* Latar belakang pastel berlapis yang bergerak perlahan */
+            background: linear-gradient(-45deg, #e0f2fe, #dcfce7, #fef9c3, #fae8ff);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+            min-height: 100vh;
+            color: #0f172a;
+            overflow-x: hidden; /* Prevent horizontal scroll from decorations */
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; /* Bouncy effect */
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.03) translateY(-5px); /* Increased scale slightly */
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15);
+            border-color: #0284c7;
+            z-index: 10;
+        }
+
+        /* Click Animation Class (added via JS) */
+        .click-animate {
+            animation: click-pulse 0.2s cubic-bezier(0.4, 0, 0.6, 1);
+        }
+
+        @keyframes click-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        /* Typing Cursor Effect */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+            color: #0f172a;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Loading Overlay Spinner - Ceria Colors */
+        .loader {
+            border: 6px solid #e0f2fe;
+            border-top: 6px solid #0284c7;
+            border-right: 6px solid #059669;
+            border-bottom: 6px solid #ca8a04;
+            border-left: 6px solid #be185d;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Page Transition Overlay */
+        #page-transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+        }
+        
+        #page-transition-overlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Decorative Background Icons */
+        .bg-icon {
+            position: absolute;
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Accessibility Focus */
+        *:focus-visible {
+            outline: 4px solid #0284c7;
+            outline-offset: 4px;
+        }
+
+        /* Hide Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0284c7;
+            border-radius: 6px;
+        }
+
+        /* Toast Animation */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .toast {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        .toast.hiding {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+<body id="home" class="flex flex-col min-h-screen font-sans relative">
+
+    <!-- PAGE TRANSITION OVERLAY -->
+    <div id="page-transition-overlay">
+        <div class="loader mb-6"></div>
+        <div class="flex items-center space-x-4 animate-pulse">
+            <!-- Updated Overlay Logo -->
+            <img src="https://i.postimg.cc/W4vLfYrm/LOGO-SKSE-utk-background-putih-(2).jpg" 
+                 alt="Logo SK Simpang Empat" 
+                 class="w-16 h-16 md:w-20 md:h-20 object-contain rounded-full shadow-sm bg-white p-1">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-cheerful-text tracking-widest font-friendly">SK SIMPANG EMPAT</h1>
+        </div>
+        <p class="text-gray-600 mt-3 text-lg font-bold font-friendly">Memuatkan Portal PPKI...</p>
+    </div>
+
+    <!-- DECORATIVE BACKGROUND ILLUSTRATIONS (Flat Design/Cartoonish) -->
+    
+    <!-- 1. Floating Pencil (Top Left) -->
+    <svg class="bg-icon animate-float top-20 left-10 w-24 h-24 md:w-32 md:h-32 text-cheerful-yellowDeep" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z" />
+    </svg>
+    
+    <!-- 2. Floating Book (Top Right) -->
+    <svg class="bg-icon animate-float-delayed top-32 right-12 w-32 h-32 md:w-40 md:h-40 text-cheerful-skyDeep" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M19,2L14,6.5V17.5L19,13V2M6.5,5C4.55,5 2.45,5.4 1,6.5V21.16C1,21.41 1.25,21.66 1.5,21.66C1.6,21.66 1.65,21.59 1.75,21.59C3.1,20.94 5.05,20.5 6.5,20.5C8.45,20.5 10.55,20.9 12,22C13.35,21.15 15.3,20.5 17.5,20.5C19.15,20.5 20.85,20.81 22.25,21.56C22.35,21.61 22.4,21.59 22.5,21.59C22.75,21.59 23,21.34 23,21.09V6.5C22.4,5.9 21.7,5.5 21,5.25V19.74C20.1,19.24 18.8,19 17.5,19C15.3,19 13.35,19.65 12,20.5V5C10.55,3.9 8.45,3.5 6.5,3.5C4.55,3.5 2.45,3.9 1,5V6.5C2.45,5.4 4.55,5 6.5,5Z" />
+    </svg>
+    
+    <!-- 3. Floating Bulb (Bottom Right) -->
+    <svg class="bg-icon animate-float bottom-20 right-20 w-24 h-24 md:w-32 md:h-32 text-cheerful-mintDeep" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12,2A7,7 0 0,0 5,9C5,11.38 6.19,13.47 8,14.74V17A1,1 0 0,0 9,18H15A1,1 0 0,0 16,17V14.74C17.81,13.47 19,11.38 19,9A7,7 0 0,0 12,2M9,21A1,1 0 0,0 10,22H14A1,1 0 0,0 15,21V20H9V21Z" />
+    </svg>
+
+    <!-- 4. Floating Bus (Bottom Left) -->
+    <svg class="bg-icon animate-float-slow bottom-16 left-16 w-28 h-28 md:w-40 md:h-40 text-cheerful-yellowDeep" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M18,11H6V6H18M16.5,17A1.5,1.5 0 0,1 15,15.5A1.5,1.5 0 0,1 16.5,14A1.5,1.5 0 0,1 18,15.5A1.5,1.5 0 0,1 16.5,17M7.5,17A1.5,1.5 0 0,1 6,15.5A1.5,1.5 0 0,1 7.5,14A1.5,1.5 0 0,1 9,15.5A1.5,1.5 0 0,1 7.5,17M4,16C4,16.88 4.39,17.67 5,18.22V21H7V19H17V21H19V18.22C19.61,17.67 20,16.88 20,16V6C20,2 15,2 15,2V3H9V2C9,2 4,2 4,6V16Z" />
+    </svg>
+
+    <!-- 5. Floating Eraser (Top Center/Right) -->
+    <svg class="bg-icon animate-float-reverse top-40 left-[45%] w-20 h-20 md:w-24 md:h-24 text-cheerful-pinkDeep" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M16.24,3.56L21.19,8.5C21.97,9.29 21.97,10.55 21.19,11.34L12,20.53C10.44,22.09 7.91,22.09 6.34,20.53L2.81,17C2.03,16.21 2.03,14.95 2.81,14.16L13.41,3.56C14.2,2.78 15.46,2.78 16.24,3.56M4.22,15.58L7.76,19.11C8.54,19.9 9.8,19.9 10.59,19.11L14.12,15.58L9.17,10.63L4.22,15.58Z" />
+    </svg>
+
+    <!-- 6. Floating Teacher (Middle Left) -->
+    <svg class="bg-icon animate-float top-1/2 left-8 w-24 h-24 md:w-32 md:h-32 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+         <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" />
+    </svg>
+
+    <!-- 7. Floating Student (Middle Right) -->
+    <svg class="bg-icon animate-float-delayed top-[55%] right-16 w-24 h-24 md:w-32 md:h-32 text-cheerful-skyDeep" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2M12,6C13.66,6 15,7.34 15,9C15,10.66 13.66,12 12,12C10.34,12 9,10.66 9,9C9,7.34 10.34,6 12,6M12,20C9.33,20 7,18.66 7,16.6C7,14.6 9.33,14 12,14C14.67,14 17,14.6 17,16.6C17,18.66 14.67,20 12,20Z" />
+    </svg>
+
+    <!-- Loading Overlay (For Link Clicks - Hidden by default) -->
+    <div id="loadingOverlay" class="fixed inset-0 z-[70] bg-white/95 backdrop-blur-md hidden flex-col items-center justify-center text-cheerful-text transition-opacity duration-300 opacity-0">
+        <div class="loader mb-6"></div>
+        <h3 class="text-3xl font-extrabold tracking-wider text-cheerful-skyDeep font-friendly text-center px-4">SEDANG MEMPROSES...</h3>
+        <p class="text-xl font-bold mt-3 font-friendly text-gray-600">Sila tunggu sebentar</p>
+    </div>
+
+    <!-- Navbar / Header -->
+    <header class="w-full bg-white shadow-lg sticky top-0 z-50 border-b-4 border-cheerful-mintDeep transition-all duration-300" data-aos="fade-down" data-aos-duration="800">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                
+                <!-- Logo & Title Section -->
+                <div class="flex items-center space-x-4 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-white rounded-full flex items-center justify-center shadow-md overflow-hidden border-4 border-cheerful-skyDeep flex-shrink-0 relative group">
+                        <!-- School Logo -->
+                        <img src="https://i.postimg.cc/W4vLfYrm/LOGO-SKSE-utk-background-putih-(2).jpg" 
+                             alt="Logo SK Simpang Empat" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-cheerful-text leading-none tracking-tight">PENGURUSAN PPKI</h1>
+                        <p class="text-base md:text-lg font-bold text-cheerful-skyDeep tracking-wide mt-1 font-friendly">SK SIMPANG EMPAT</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Links Only (No Search) -->
+                <nav class="flex flex-wrap justify-center gap-4 md:gap-8 text-base md:text-lg font-bold text-gray-700 font-friendly">
+                    <a href="#home" class="px-3 py-2 rounded-lg hover:bg-cheerful-sky hover:text-cheerful-skyDeep transition-colors duration-200">UTAMA</a>
+                    <a href="#laporan-grid" class="px-3 py-2 rounded-lg hover:bg-cheerful-sky hover:text-cheerful-skyDeep transition-colors duration-200">LAPORAN</a>
+                    <a href="#hubungi" class="px-3 py-2 rounded-lg hover:bg-cheerful-sky hover:text-cheerful-skyDeep transition-colors duration-200">HUBUNGI</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-10 md:py-16 relative z-10">
+        
+        <!-- Welcome Section with Typing Effect -->
+        <div class="text-center mb-16 relative" data-aos="fade-up" data-aos-delay="100">
+             <!-- Background Shapes for Welcome Title -->
+             <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full -z-10 opacity-30">
+                 <div class="absolute top-[-20px] left-[20%] w-12 h-12 bg-cheerful-pink rounded-full animate-float"></div>
+                 <div class="absolute bottom-0 right-[20%] w-10 h-10 bg-cheerful-yellow rounded-full animate-float-delayed"></div>
+             </div>
+
+            <span class="inline-block py-2 px-5 rounded-full bg-cheerful-mint border-2 border-cheerful-mintDeep text-cheerful-text text-sm font-extrabold tracking-wider mb-5 shadow-sm font-friendly transform hover:scale-105 transition-transform">
+                <i class="fas fa-smile mr-2 text-cheerful-mintDeep text-lg"></i> PORTAL RASMI & INKLUSIF
+            </span>
+            <!-- Typing Effect Container -->
+            <h2 class="text-4xl md:text-6xl font-extrabold text-cheerful-text mb-6 min-h-[1.2em] leading-tight">
+                <span id="typing-text" class="typing-cursor"></span>
+            </h2>
+            <p class="text-gray-800 font-medium max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">Akses pantas dan mudah ke semua sistem pengurusan, laporan data, dan dokumentasi sekolah untuk semua warga.</p>
+        </div>
+
+        <!-- Links Grid -->
+        <div id="laporan-grid" class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10 pb-16">
+
+            <!-- 1. Senarai Nama Murid (Sky Blue Theme) -->
+            <button onclick="animateAndOpen(this, 'https://docs.google.com/document/d/1IMNdB3Xl4lX9pj6H_WyrqyM8unnsKRua/edit?usp=sharing&ouid=115365812702161811264&rtpof=true&sd=true')" class="nav-btn glass-card group rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-pointer min-h-[320px] border-t-[10px] border-cheerful-skyDeep relative overflow-hidden bg-white" data-aos="fade-up" data-aos-delay="100">
+                <div class="absolute inset-0 bg-gradient-to-b from-cheerful-sky to-transparent opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                <div class="relative z-10 w-24 h-24 md:w-28 md:h-28 bg-white text-cheerful-skyDeep rounded-3xl rotate-3 group-hover:rotate-0 transition-transform duration-300 shadow-lg flex items-center justify-center mb-6 border-4 border-cheerful-skyDeep">
+                    <i class="fas fa-user-graduate text-5xl md:text-6xl"></i>
+                </div>
+                <h3 class="relative z-10 font-extrabold text-2xl md:text-3xl text-cheerful-text group-hover:text-cheerful-skyDeep transition-colors leading-tight">SENARAI NAMA MURID</h3>
+                <span class="relative z-10 text-base md:text-lg text-gray-700 font-bold font-friendly mt-3 bg-white/90 px-4 py-1.5 rounded-full border border-gray-200 shadow-sm">Tahun 2026</span>
+                <p class="relative z-10 text-sm font-extrabold text-cheerful-skyDeep font-friendly mt-auto pt-6 group-hover:underline flex items-center uppercase tracking-wide bg-white/50 px-3 py-1 rounded-lg">
+                    Klik untuk buka <i class="fas fa-arrow-right ml-2 text-lg group-hover:translate-x-1 transition-transform"></i>
+                </p>
+            </button>
+
+            <!-- 2. Senarai Nama Guru (Pastel Pink Theme) -->
+            <button onclick="animateAndOpen(this, '#link2')" class="nav-btn glass-card group rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-pointer min-h-[320px] border-t-[10px] border-cheerful-pinkDeep relative overflow-hidden bg-white" data-aos="fade-up" data-aos-delay="200">
+                <div class="absolute inset-0 bg-gradient-to-b from-cheerful-pink to-transparent opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                <div class="relative z-10 w-24 h-24 md:w-28 md:h-28 bg-white text-cheerful-pinkDeep rounded-3xl -rotate-3 group-hover:rotate-0 transition-transform duration-300 shadow-lg flex items-center justify-center mb-6 border-4 border-cheerful-pinkDeep">
+                    <i class="fas fa-chalkboard-teacher text-5xl md:text-6xl"></i>
+                </div>
+                <h3 class="relative z-10 font-extrabold text-2xl md:text-3xl text-cheerful-text group-hover:text-cheerful-pinkDeep transition-colors leading-tight">SENARAI NAMA GURU</h3>
+                <span class="relative z-10 text-base md:text-lg text-gray-700 font-bold font-friendly mt-3 bg-white/90 px-4 py-1.5 rounded-full border border-gray-200 shadow-sm">Direktori Guru</span>
+                <p class="relative z-10 text-sm font-extrabold text-cheerful-pinkDeep font-friendly mt-auto pt-6 group-hover:underline flex items-center uppercase tracking-wide bg-white/50 px-3 py-1 rounded-lg">
+                    Klik untuk buka <i class="fas fa-arrow-right ml-2 text-lg group-hover:translate-x-1 transition-transform"></i>
+                </p>
+            </button>
+
+            <!-- 3. Laporan Tugasan PPM (Mint Green Theme) -->
+            <button onclick="animateAndOpen(this, 'https://drive.google.com/drive/folders/1fJDdu7HHAWwWeXBOx-1hr2MBEqE8nTIL?usp=sharing')" class="nav-btn glass-card group rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-pointer min-h-[320px] border-t-[10px] border-cheerful-mintDeep relative overflow-hidden bg-white" data-aos="fade-up" data-aos-delay="300">
+                <div class="absolute inset-0 bg-gradient-to-b from-cheerful-mint to-transparent opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                <div class="relative z-10 w-24 h-24 md:w-28 md:h-28 bg-white text-cheerful-mintDeep rounded-3xl rotate-2 group-hover:rotate-0 transition-transform duration-300 shadow-lg flex items-center justify-center mb-6 border-4 border-cheerful-mintDeep">
+                    <i class="fas fa-clipboard-check text-5xl md:text-6xl"></i>
+                </div>
+                <h3 class="relative z-10 font-extrabold text-2xl md:text-3xl text-cheerful-text group-hover:text-cheerful-mintDeep transition-colors leading-tight">LAPORAN TUGASAN PPM</h3>
+                <span class="relative z-10 text-base md:text-lg text-gray-700 font-bold font-friendly mt-3 bg-white/90 px-4 py-1.5 rounded-full border border-gray-200 shadow-sm">Log Harian Pembantu</span>
+                <p class="relative z-10 text-sm font-extrabold text-cheerful-mintDeep font-friendly mt-auto pt-6 group-hover:underline flex items-center uppercase tracking-wide bg-white/50 px-3 py-1 rounded-lg">
+                    Klik untuk buka <i class="fas fa-arrow-right ml-2 text-lg group-hover:translate-x-1 transition-transform"></i>
+                </p>
+            </button>
+
+            <!-- 4. Laporan RMT (Soft Yellow Theme) -->
+            <button onclick="animateAndOpen(this, 'https://drive.google.com/drive/folders/1Lb_8jpKZFEaHoLUhOJGtE1ntNu_b-uYq?usp=drive_link')" class="nav-btn glass-card group rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-pointer min-h-[320px] border-t-[10px] border-cheerful-yellowDeep relative overflow-hidden bg-white" data-aos="fade-up" data-aos-delay="400">
+                <div class="absolute inset-0 bg-gradient-to-b from-cheerful-yellow to-transparent opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                <div class="relative z-10 w-24 h-24 md:w-28 md:h-28 bg-white text-cheerful-yellowDeep rounded-3xl -rotate-2 group-hover:rotate-0 transition-transform duration-300 shadow-lg flex items-center justify-center mb-6 border-4 border-cheerful-yellowDeep">
+                    <i class="fas fa-utensils text-5xl md:text-6xl"></i>
+                </div>
+                <h3 class="relative z-10 font-extrabold text-2xl md:text-3xl text-cheerful-text group-hover:text-cheerful-yellowDeep transition-colors leading-tight">LAPORAN RMT</h3>
+                <span class="relative z-10 text-base md:text-lg text-gray-700 font-bold font-friendly mt-3 bg-white/90 px-4 py-1.5 rounded-full border border-gray-200 shadow-sm">Rekod Makanan</span>
+                <p class="relative z-10 text-sm font-extrabold text-cheerful-yellowDeep font-friendly mt-auto pt-6 group-hover:underline flex items-center uppercase tracking-wide bg-white/50 px-3 py-1 rounded-lg">
+                    Klik untuk buka <i class="fas fa-arrow-right ml-2 text-lg group-hover:translate-x-1 transition-transform"></i>
+                </p>
+            </button>
+
+            <!-- 5. Laporan Mingguan (Purple Theme) -->
+            <button onclick="animateAndOpen(this, 'https://drive.google.com/drive/folders/1y0E6X9_RYBkO-12AmTvvwf0dByuCul8y?usp=drive_link')" class="nav-btn glass-card group rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-pointer min-h-[320px] border-t-[10px] border-purple-600 relative overflow-hidden bg-white" data-aos="fade-up" data-aos-delay="500">
+                <div class="absolute inset-0 bg-gradient-to-b from-purple-100 to-transparent opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                <div class="relative z-10 w-24 h-24 md:w-28 md:h-28 bg-white text-purple-700 rounded-3xl rotate-3 group-hover:rotate-0 transition-transform duration-300 shadow-lg flex items-center justify-center mb-6 border-4 border-purple-600">
+                    <i class="fas fa-calendar-week text-5xl md:text-6xl"></i>
+                </div>
+                <h3 class="relative z-10 font-extrabold text-2xl md:text-3xl text-cheerful-text group-hover:text-purple-700 transition-colors leading-tight">LAPORAN MINGGUAN</h3>
+                <span class="relative z-10 text-base md:text-lg text-gray-700 font-bold font-friendly mt-3 bg-white/90 px-4 py-1.5 rounded-full border border-gray-200 shadow-sm">RPH & Aktiviti</span>
+                <p class="relative z-10 text-sm font-extrabold text-purple-700 font-friendly mt-auto pt-6 group-hover:underline flex items-center uppercase tracking-wide bg-white/50 px-3 py-1 rounded-lg">
+                    Klik untuk buka <i class="fas fa-arrow-right ml-2 text-lg group-hover:translate-x-1 transition-transform"></i>
+                </p>
+            </button>
+
+            <!-- 6. Laporan Aktiviti (Pink Theme) -->
+            <button onclick="animateAndOpen(this, '#link6')" class="nav-btn glass-card group rounded-3xl p-8 flex flex-col items-center justify-center text-center cursor-pointer min-h-[320px] border-t-[10px] border-pink-600 relative overflow-hidden bg-white" data-aos="fade-up" data-aos-delay="600">
+                <div class="absolute inset-0 bg-gradient-to-b from-pink-100 to-transparent opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                <div class="relative z-10 w-24 h-24 md:w-28 md:h-28 bg-white text-pink-600 rounded-3xl -rotate-3 group-hover:rotate-0 transition-transform duration-300 shadow-lg flex items-center justify-center mb-6 border-4 border-pink-600">
+                    <i class="fas fa-camera-retro text-5xl md:text-6xl"></i>
+                </div>
+                <h3 class="relative z-10 font-extrabold text-2xl md:text-3xl text-cheerful-text group-hover:text-pink-600 transition-colors leading-tight">LAPORAN AKTIVITI</h3>
+                <span class="relative z-10 text-base md:text-lg text-gray-700 font-bold font-friendly mt-3 bg-white/90 px-4 py-1.5 rounded-full border border-gray-200 shadow-sm">Dokumentasi Program</span>
+                <p class="relative z-10 text-sm font-extrabold text-pink-700 font-friendly mt-auto pt-6 group-hover:underline flex items-center uppercase tracking-wide bg-white/50 px-3 py-1 rounded-lg">
+                    Klik untuk buka <i class="fas fa-arrow-right ml-2 text-lg group-hover:translate-x-1 transition-transform"></i>
+                </p>
+            </button>
+            
+            <!-- 7. Buku Pengurusan PPKI (Featured) -->
+            <button onclick="animateAndOpen(this, '#link7')" class="nav-btn glass-card group rounded-3xl p-8 flex sm:col-span-2 lg:col-span-3 items-center justify-between text-left cursor-pointer border-t-[10px] border-cheerful-skyDeep relative overflow-hidden bg-gradient-to-r from-white to-cheerful-sky transition-all duration-300 hover:bg-white min-h-[200px]" data-aos="fade-up" data-aos-delay="700">
+                <div class="absolute right-0 top-0 opacity-10 transform translate-x-10 -translate-y-5 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-12">
+                     <i class="fas fa-book text-[12rem] text-cheerful-skyDeep"></i>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-center z-10 relative w-full">
+                    <div class="w-24 h-24 md:w-32 md:h-32 bg-cheerful-skyDeep text-white rounded-3xl flex items-center justify-center mb-4 md:mb-0 md:mr-8 shadow-xl group-hover:scale-110 transition-transform duration-300 flex-shrink-0 border-4 border-cheerful-yellowDeep">
+                        <i class="fas fa-book-open text-5xl md:text-6xl"></i>
+                    </div>
+                    <div class="text-center md:text-left">
+                        <h3 class="font-extrabold text-2xl md:text-4xl text-cheerful-text group-hover:text-cheerful-skyDeep transition-colors uppercase leading-tight">BUKU PENGURUSAN PPKI</h3>
+                        <p class="text-lg md:text-xl text-gray-800 font-medium mt-2 max-w-2xl">Panduan lengkap, takwim, carta organisasi dan pekeliling terkini.</p>
+                        <p class="text-base font-extrabold text-cheerful-skyDeep font-friendly mt-4 group-hover:underline flex items-center justify-center md:justify-start">
+                            KLIK UNTUK MUAT TURUN / BACA <i class="fas fa-arrow-right ml-2 text-xl group-hover:translate-x-1 transition-transform"></i>
+                        </p>
+                    </div>
+                </div>
+                <div class="hidden md:block z-10 bg-white px-6 py-3 rounded-full text-base font-bold font-friendly text-cheerful-skyDeep shadow-lg border border-gray-200 group-hover:bg-cheerful-skyDeep group-hover:text-white transition-colors absolute top-6 right-6">
+                    <i class="fas fa-download mr-2"></i> PDF / DOC
+                </div>
+            </button>
+            
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer id="hubungi" class="bg-white text-gray-800 mt-auto border-t-8 border-cheerful-mintDeep" data-aos="fade-up" data-aos-offset="0">
+        <div class="container mx-auto px-4 py-12">
+            <div class="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+                <div class="mb-8 md:mb-0">
+                    <div class="flex items-center justify-center md:justify-start mb-4">
+                        <!-- Updated Footer Logo -->
+                        <img src="https://i.postimg.cc/W4vLfYrm/LOGO-SKSE-utk-background-putih-(2).jpg" 
+                             alt="Logo SK Simpang Empat" 
+                             class="h-12 w-auto mr-4 object-contain">
+                        <h4 class="font-extrabold tracking-wider text-2xl text-cheerful-text">SK SIMPANG EMPAT</h4>
+                    </div>
+                    <p class="text-gray-600 text-lg font-semibold font-friendly max-w-sm leading-relaxed">Program Pendidikan Khas Integrasi (PPKI)<br>Melahirkan insan berdikari dan berkemahiran.</p>
+                </div>
+                
+                <div class="flex flex-col items-center md:items-end">
+                    <h5 class="font-extrabold text-cheerful-text text-xl mb-4">HUBUNGI KAMI</h5>
+                    <div class="flex space-x-6 mb-6">
+                        <a href="#" class="w-12 h-12 rounded-full bg-cheerful-skyDeep text-white flex items-center justify-center hover:bg-cheerful-mintDeep hover:scale-110 transition-all duration-300 shadow-md text-xl"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-12 h-12 rounded-full bg-cheerful-pinkDeep text-white flex items-center justify-center hover:bg-cheerful-yellowDeep hover:scale-110 transition-all duration-300 shadow-md text-xl"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="w-12 h-12 rounded-full bg-cheerful-skyDeep text-white flex items-center justify-center hover:bg-cheerful-mintDeep hover:scale-110 transition-all duration-300 shadow-md text-xl"><i class="fas fa-globe"></i></a>
+                        <a href="#" class="w-12 h-12 rounded-full bg-cheerful-skyDeep text-white flex items-center justify-center hover:bg-cheerful-mintDeep hover:scale-110 transition-all duration-300 shadow-md text-xl"><i class="fas fa-phone"></i></a>
+                    </div>
+                    <p class="text-sm font-bold text-gray-500 font-friendly">© <span id="year"></span> Hak Cipta Terpelihara</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL POPUP -->
+    <div id="infoModal" class="fixed inset-0 z-[60] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-900/70 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop" onclick="closeModal()"></div>
+        
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <!-- Modal Panel -->
+                <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg border-8 border-cheerful-skyDeep scale-95 opacity-0" id="modalPanel">
+                    
+                    <!-- Decorative Circle in BG -->
+                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-cheerful-sky rounded-full opacity-50 z-0 pointer-events-none"></div>
+
+                    <div class="bg-white px-8 pb-8 pt-8 relative z-10">
+                        <div class="sm:flex sm:items-start">
+                            <div id="modalIconContainer" class="mx-auto flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-cheerful-sky sm:mx-0 border-4 border-cheerful-skyDeep shadow-md">
+                                <!-- Icon will be injected here -->
+                            </div>
+                            <div class="mt-5 text-center sm:ml-6 sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-3xl font-extrabold leading-tight text-cheerful-text" id="modalTitle">Title</h3>
+                                <div class="mt-4">
+                                    <p class="text-lg text-gray-700 font-medium leading-relaxed" id="modalDesc">Description goes here.</p>
+                                </div>
+                                <div class="mt-6 bg-cheerful-yellow p-5 rounded-2xl border-2 border-cheerful-yellowDeep flex items-start shadow-inner">
+                                    <i class="fas fa-info-circle text-cheerful-yellowDeep mt-1 mr-4 text-2xl"></i>
+                                    <p class="text-base text-gray-800 font-bold font-friendly leading-snug">Peringatan: Sila pastikan anda log masuk ke akaun Google sekolah jika pautan ini memerlukan akses khas.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-8 py-6 sm:flex sm:flex-row-reverse border-t border-gray-200 gap-3">
+                        <button type="button" onclick="proceedLink()" class="inline-flex w-full justify-center items-center rounded-xl bg-cheerful-skyDeep px-6 py-4 text-lg font-extrabold font-friendly text-white shadow-lg hover:bg-blue-700 transition-all sm:w-auto hover:shadow-xl transform hover:-translate-y-1">
+                            BUKA PAUTAN <i class="fas fa-external-link-alt ml-3 text-sm"></i>
+                        </button>
+                        <button type="button" onclick="closeModal()" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-6 py-4 text-lg font-bold font-friendly text-gray-700 shadow-sm ring-2 ring-inset ring-gray-300 hover:bg-gray-100 transition-all sm:mt-0 sm:w-auto">
+                            BATAL
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[80] flex flex-col gap-3"></div>
+
+    <!-- AOS Script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // Set Current Year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // --- Window Load & Page Transition Logic ---
+        window.addEventListener('load', () => {
+            const overlay = document.getElementById('page-transition-overlay');
+            
+            // Allow a small delay to show the branding, then fade out
+            setTimeout(() => {
+                overlay.classList.add('fade-out');
+                
+                // Remove overlay from DOM after animation completes to free up interactions
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    
+                    // Initialize AOS animations AFTER page reveal for smoothness
+                    AOS.init({
+                        duration: 800,
+                        easing: 'ease-out-cubic',
+                        once: true,
+                        offset: 50
+                    });
+
+                    // Start Typing logic after reveal
+                    startTyping();
+                }, 800); 
+            }, 800); 
+        });
+
+        // --- Typing Effect ---
+        const textToType = "Selamat Datang ke Portal PPKI SK SIMPANG EMPAT";
+        const typingElement = document.getElementById('typing-text');
+        let charIndex = 0;
+
+        function startTyping() {
+            setTimeout(typeWriter, 100);
+        }
+
+        function typeWriter() {
+            if (charIndex < textToType.length) {
+                typingElement.textContent += textToType.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriter, 50); // Typing speed
+            }
+        }
+
+        // --- Button Animation Wrapper ---
+        function animateAndOpen(btn, link) {
+            // Add click animation class
+            btn.classList.add('click-animate');
+            
+            // Open modal after a tiny delay to let animation start
+            setTimeout(() => {
+                openModal(btn, link);
+                // Remove class after animation finishes
+                setTimeout(() => btn.classList.remove('click-animate'), 200);
+            }, 100);
+        }
+
+        // --- Modal Logic ---
+        let currentLinkUrl = '';
+        let currentLinkTitle = '';
+
+        function openModal(element, url) {
+            const title = element.querySelector('h3').innerText;
+            const desc = element.querySelector('span').innerText;
+            const iconClass = element.querySelector('i').className;
+
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            
+            const iconContainer = document.getElementById('modalIconContainer');
+            // Extract the color class from the icon to match modal icon color
+            let colorClass = "text-cheerful-skyDeep"; // Default
+            if (iconClass.includes('pink')) colorClass = "text-cheerful-pinkDeep";
+            if (iconClass.includes('purple')) colorClass = "text-purple-700";
+            if (iconClass.includes('mint') || iconClass.includes('teal')) colorClass = "text-cheerful-mintDeep";
+            if (iconClass.includes('yellow') || iconClass.includes('orange')) colorClass = "text-cheerful-yellowDeep";
+
+            // Increase modal icon size significantly
+            iconContainer.innerHTML = `<i class="${iconClass} text-5xl md:text-6xl ${colorClass}"></i>`;
+
+            currentLinkUrl = url;
+            currentLinkTitle = title;
+
+            const modal = document.getElementById('infoModal');
+            modal.classList.remove('hidden');
+
+            const backdrop = document.getElementById('modalBackdrop');
+            const panel = document.getElementById('modalPanel');
+
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                panel.classList.remove('opacity-0', 'scale-95');
+                panel.classList.add('opacity-100', 'scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const backdrop = document.getElementById('modalBackdrop');
+            const panel = document.getElementById('modalPanel');
+
+            backdrop.classList.add('opacity-0');
+            panel.classList.remove('opacity-100', 'scale-100');
+            panel.classList.add('opacity-0', 'scale-95');
+
+            setTimeout(() => {
+                document.getElementById('infoModal').classList.add('hidden');
+            }, 300);
+        }
+
+        function proceedLink() {
+            closeModal();
+            
+            // Show Loading Overlay
+            const loader = document.getElementById('loadingOverlay');
+            loader.classList.remove('hidden');
+            // Trigger fade in
+            setTimeout(() => loader.classList.remove('opacity-0'), 10);
+
+            // Simulate Network Delay (1.5 seconds)
+            setTimeout(() => {
+                // Hide Loader
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.classList.add('hidden'), 300);
+
+                // Show Success Toast
+                showToast(currentLinkTitle);
+                console.log(`Navigating to: ${currentLinkTitle} (${currentLinkUrl})`);
+                
+                // Actual navigation
+                if(currentLinkUrl && currentLinkUrl !== '#') {
+                    window.open(currentLinkUrl, '_blank');
+                }
+            }, 1500);
+        }
+
+        function showToast(title) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast bg-white text-gray-800 px-8 py-5 rounded-2xl shadow-2xl flex items-center min-w-[340px] border-l-[10px] border-cheerful-mintDeep ring-1 ring-gray-100';
+            
+            toast.innerHTML = `
+                <i class="fas fa-check-circle mr-5 text-cheerful-mintDeep text-3xl"></i>
+                <div>
+                    <h4 class="font-extrabold text-base text-cheerful-text uppercase tracking-wide font-friendly">BERJAYA DIBUKA</h4>
+                    <p class="text-sm text-gray-600 mt-1 font-bold font-friendly">${title}</p>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                toast.addEventListener('animationend', () => {
+                    toast.remove();
+                });
+            }, 3000);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
